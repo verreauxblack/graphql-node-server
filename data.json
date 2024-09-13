@@ -1,0 +1,41 @@
+{
+    "posts": [
+        { "id": 1, "title": "Hello World", "author": 1, "comments": [1, 2] },
+        { "id": 2, "title": "GraphQL is awesome", "author": 2, "comments": [3, 4] },
+        { "id": 3, "title": "How to use React with GraphQL", "author": 3, "comments": [5] },
+        { "id": 4, "title": "Introduction to Node.js", "author": 4, "comments": [6, 7] },
+        { "id": 5, "title": "Best Practices for API Design", "author": 2, "comments": [8] },
+        { "id": 6, "title": "Building Scalable Applications", "author": 5, "comments": [9, 10] },
+        { "id": 7, "title": "Understanding Async Programming", "author": 1, "comments": [11] },
+        { "id": 8, "title": "Diving into TypeScript", "author": 4, "comments": [12, 13] },
+        { "id": 9, "title": "Mastering CSS Grid", "author": 3, "comments": [14, 15] },
+        { "id": 10, "title": "The Future of JavaScript", "author": 5, "comments": [16, 17] }
+    ],
+    "comments": [
+        { "id": 1, "content": "Great post!", "postId": 1, "author": 2 },
+        { "id": 2, "content": "Very informative.", "postId": 1, "author": 3 },
+        { "id": 3, "content": "Thanks for the insights.", "postId": 2, "author": 4 },
+        { "id": 4, "content": "This was really helpful.", "postId": 2, "author": 1 },
+        { "id": 5, "content": "React and GraphQL make a great pair.", "postId": 3, "author": 5 },
+        { "id": 6, "content": "Good introduction to Node.js.", "postId": 4, "author": 3 },
+        { "id": 7, "content": "I learned a lot from this.", "postId": 4, "author": 2 },
+        { "id": 8, "content": "Best practices are key!", "postId": 5, "author": 1 },
+        { "id": 9, "content": "Scalability is crucial.", "postId": 6, "author": 3 },
+        { "id": 10, "content": "Well explained!", "postId": 6, "author": 2 },
+        { "id": 11, "content": "Async programming can be tricky.", "postId": 7, "author": 4 },
+        { "id": 12, "content": "TypeScript is powerful!", "postId": 8, "author": 5 },
+        { "id": 13, "content": "Good intro to TypeScript.", "postId": 8, "author": 2 },
+        { "id": 14, "content": "CSS Grid is a game changer.", "postId": 9, "author": 1 },
+        { "id": 15, "content": "I love CSS Grid.", "postId": 9, "author": 3 },
+        { "id": 16, "content": "JavaScript is evolving fast.", "postId": 10, "author": 4 },
+        { "id": 17, "content": "The future looks bright for JS.", "postId": 10, "author": 5 }
+    ],
+    "users": [
+        { "id": 1, "name": "John Doe" },
+        { "id": 2, "name": "Jane Doe" },
+        { "id": 3, "name": "Alice Johnson" },
+        { "id": 4, "name": "Bob Smith" },
+        { "id": 5, "name": "Charlie Brown" }
+    ]
+}
+  
