@@ -114,6 +114,7 @@ const apolloServer = new ApolloServer({
     // Return the authenticated user in the context
     return { user: req.user }; // Attach the user from the middleware
   },
+  introspection: true,  // Enable introspection queries (important for development)
 });
 
 // Apply Apollo Server as middleware to Express app
