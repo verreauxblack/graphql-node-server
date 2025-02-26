@@ -1,23 +1,21 @@
-const { ApolloServer, gql, AuthenticationError } = require('apollo-server-express'); // Import AuthenticationError
+const { ApolloServer, gql, AuthenticationError } = require('apollo-server-express');
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const data = require('../data.json');
 
-const JWT_SECRET = 'mysecretkey123'; // Use environment variables in production
+const JWT_SECRET = 'mysecretkey123';
 const validUsername = 'admin';
 const validPassword = 'password123';
 
 const app = express();
-app.use(bodyParser.json()); // Middleware to parse JSON bodies
+app.use(bodyParser.json());
 
-// Helper function to generate JWT token
 const generateToken = (user) => {
   return jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '5m' });
 };
 
-// REST API route for login
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -29,30 +27,32 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Middleware to check JWT token before the request reaches Apollo Server
 app.use((req, res, next) => {
   const authHeader = req.headers.authorization || '';
   if (authHeader) {
-    const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+    const token = authHeader.split(' ')[1];
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = decoded; // Attach decoded token data to the request object
+      req.user = decoded;
     } catch (err) {
       console.error('Invalid or expired token:', err);
-
-      // Set status code to 401 Unauthorized for invalid or expired token
       return res.status(401).json({ message: 'Invalid or expired token' });
     }
   }
-  next(); // Proceed to the next middleware (Apollo Server)
+  next();
 });
 
-// GraphQL schema
 const typeDefs = gql`
   type Query {
     posts: [Post!]!
     users: [User!]!
     comments: [Comment!]!
+  }
+
+  type Mutation {
+    addPost(title: String!, authorId: ID!): Post!
+    addUser(name: String!): User!
+    addComment(content: String!, postId: ID!, authorId: ID!): Comment!
   }
 
   type Post {
@@ -74,7 +74,6 @@ const typeDefs = gql`
   }
 `;
 
-// Resolvers for GraphQL
 const resolvers = {
   Query: {
     posts: (parent, args, context) => {
@@ -96,32 +95,52 @@ const resolvers = {
       return data.comments;
     },
   },
+  Mutation: {
+    addPost: (parent, { title, authorId }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const newPost = { id: String(data.posts.length + 1), title, author: authorId, comments: [] };
+      data.posts.push(newPost);
+      return newPost;
+    },
+    addUser: (parent, { name }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const newUser = { id: String(data.users.length + 1), name };
+      data.users.push(newUser);
+      return newUser;
+    },
+    addComment: (parent, { content, postId, authorId }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const newComment = { id: String(data.comments.length + 1), content, author: authorId, postId };
+      data.comments.push(newComment);
+      return newComment;
+    },
+  },
   Post: {
     author: (parent) => data.users.find((user) => user.id === parent.author),
-    comments: (parent) =>
-      data.comments.filter((comment) => comment.postId === parent.id),
+    comments: (parent) => data.comments.filter((comment) => comment.postId === parent.id),
   },
   Comment: {
     author: (parent) => data.users.find((user) => user.id === parent.author),
   },
 };
 
-// Apollo Server with JWT authentication via context
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
-    // Return the authenticated user in the context
-    return { user: req.user }; // Attach the user from the middleware
+    return { user: req.user };
   },
-  introspection: true,  // Enable introspection queries (important for development)
+  introspection: true,
 });
 
-// Apply Apollo Server as middleware to Express app
 apolloServer.start().then(() => {
   apolloServer.applyMiddleware({ app });
-
-  // Start the server
   app.listen({ port: 4000 }, () => {
     console.log(`🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`);
     console.log('REST API for login is available at http://localhost:4000/login');
